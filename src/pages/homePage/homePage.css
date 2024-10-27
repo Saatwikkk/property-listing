@@ -1,0 +1,30 @@
+.carousel-caption h3 {
+    font-size: 2rem;
+    color: #fff; /* White text */
+  }
+  
+  .carousel-caption p {
+    font-size: 1.2rem;
+    color: #ddd; /* Light grey text */
+  }
+  
+  .carousel-caption {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background behind text */
+    border-radius: 8px;
+  }
+  
+  /* Ensure that the container is fluid and the carousel has no margins */
+.carousel-container {
+  padding: 0;
+  margin: 0;
+}
+
+/* Custom styles for the carousel */
+.custom-carousel {
+  height: 60vh; /* Set carousel height to half of the viewport height */
+}
+
+.carousel-img {
+  height: 60vh; /* Ensure the image fills the carousel */
+  object-fit: cover; /* Ensure the image covers the container without distortion */
+}
