@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link for login redirection
 import axios from 'axios'; 
 
 const SignUpPage = () => {
@@ -31,7 +31,7 @@ const SignUpPage = () => {
       if (response.status === 201) {  // Check for a successful response
         if (formData.role === 'customer') {
           // If user signed up as customer, redirect to home
-          navigate('/');
+          navigate('/home');
         } else {
           // If user signed up as admin, redirect to admin page
           navigate('/admin');
@@ -89,20 +89,21 @@ const SignUpPage = () => {
               <Form.Label>Sign Up As:</Form.Label>
               <Form.Check
                 type="radio"
-                id="role-admin" // Unique ID for the admin radio button
+                id="role-admin"
                 label="Admin"
                 name="role"
                 value="admin"
                 onChange={handleInputChange}
+                checked={formData.role === 'admin'}
               />
               <Form.Check
                 type="radio"
-                id="role-customer" // Unique ID for the customer radio button
+                id="role-customer"
                 label="Customer"
                 name="role"
                 value="customer"
                 onChange={handleInputChange}
-                defaultChecked
+                checked={formData.role === 'customer'}
               />
             </Form.Group>
 
@@ -113,6 +114,13 @@ const SignUpPage = () => {
 
           {/* Display signup status */}
           {signupStatus && <p className="mt-3">{signupStatus}</p>}
+
+          {/* Link to login page */}
+          <div className="mt-3">
+            <p>
+              Already have an account? <Link to="/login">Log in</Link>
+            </p>
+          </div>
         </Col>
       </Row>
     </Container>

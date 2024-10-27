@@ -8,24 +8,35 @@ import CustomNavbar from "./components/navbar/Navbar";
 import PropertyList from "./pages/propertyList/PropertyList";
 import PropertyDetail from "./pages/propertyDetails/PropertyDetails";
 import BookingPage from "./pages/bookingPage/BookingPage";
-import AdminPage from "./pages/adminPage/AdminPage"
+import AdminPage from "./pages/adminPage/AdminPage";
+import PaymentPage from "./pages/paymentPage/PaymentPage"
+import Dashboard from './pages/dashboard/Dashboard';
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <div>
+        <CustomNavbar />
+        <Dashboard />
+      </div>
+    ),
+  },
+  {
+    path: "/home",
+    element: (
+      <div>
+        <CustomNavbar />
+        <HomePage />
+      </div>
+    ),
+  },
   {
     path: "/signup",
     element: (
       <div>
         <CustomNavbar />
         <SignUpPage />
-      </div>
-    ),
-  },
-  {
-    path: "/",
-    element: (
-      <div>
-        <CustomNavbar />
-        <HomePage />
       </div>
     ),
   },
@@ -72,7 +83,16 @@ const router = createBrowserRouter([
         <AdminPage />
       </div>
     )
-  }
+  },
+  {
+    path: "/payment/:id",
+    element: (
+      <div>
+        <CustomNavbar />
+        <PaymentPage />
+      </div>
+    ),
+  },
 ]);
 
 function App() {

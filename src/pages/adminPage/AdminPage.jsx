@@ -11,10 +11,10 @@ const AdminPage = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // For navigation
+  const navigate = useNavigate(); 
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [selectedProperty, setSelectedProperty] = useState();
+  const [selectedProperty, setSelectedProperty] = useState(null); // Null when no property selected
   const [showModal, setShowModal] = useState(false);
 
   // Fetch properties and bookings on component mount
@@ -25,7 +25,7 @@ const AdminPage = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get('/api/properties');
+      const response = await axios.get('https://localhost:5000/api/properties');
       const data = Array.isArray(response.data) ? response.data : [];
       setProperties(data);
     } catch (error) {
@@ -35,7 +35,7 @@ const AdminPage = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('/api/bookings');
+      const response = await axios.get('https://localhost:5000/api/bookings');
       const data = Array.isArray(response.data) ? response.data : [];
       setBookings(data);
     } catch (error) {
@@ -62,23 +62,23 @@ const AdminPage = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(selectedProperty);
+    
     try {
-      if (selectedProperty) {
-        // Update property
+      if (selectedProperty?.id) {
+        // Update existing property
         const response = await axios.put(`/api/properties/${selectedProperty.id}`, selectedProperty);
-        // Update the property in the state to reflect changes in the table
         setProperties((prevProperties) =>
           prevProperties.map((prop) =>
             prop.id === selectedProperty.id ? response.data : prop
           )
         );
       } else {
-        // Create new property
+        // Create a new property
         const response = await axios.post('/api/properties', selectedProperty);
         setProperties((prevProperties) => [...prevProperties, response.data]);
       }
       setShowModal(false); // Close modal after submission
+      setSelectedProperty(null); // Reset selected property
     } catch (error) {
       console.error('Error updating/adding property:', error);
     }
@@ -234,7 +234,7 @@ const AdminPage = () => {
         {/* Modal for adding/editing properties */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>{selectedProperty ? 'Edit Property' : 'Add Property'}</Modal.Title>
+            <Modal.Title>{selectedProperty?.id ? 'Edit Property' : 'Add Property'}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={handleFormSubmit}>
@@ -266,7 +266,7 @@ const AdminPage = () => {
                 />
               </Form.Group>
               <Button variant="primary" type="submit">
-                {selectedProperty ? 'Update Property' : 'Add Property'}
+                {selectedProperty?.id ? 'Update Property' : 'Add Property'}
               </Button>
             </Form>
           </Modal.Body>

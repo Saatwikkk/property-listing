@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'; // To send login data to the backend
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'customer', // Default role
+    role: 'customer', // Default role set to 'customer'
   });
-  const [loginStatus, setLoginStatus] = useState('');
-  const navigate = useNavigate(); // To handle redirection
+  const [loginStatus, setLoginStatus] = useState(''); // To handle login status/error
+  const navigate = useNavigate(); // To handle navigation
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -27,11 +27,18 @@ const LoginPage = () => {
       const response = await axios.post('http://localhost:5000/api/login/', formData);
 
       if (response.status === 200) {
-        // Store JWT in localStorage or cookies for authentication in future requests
-        localStorage.setItem('token', response.data.token);
+        // Store JWT and role in localStorage for future requests
+        localStorage.setItem('token', response.data.token); // If using JWT, save it
+        localStorage.setItem('role', response.data.role); // Save the user's role
 
-        // Redirect the user to the home page
-        navigate('/');
+        // Check user role and redirect based on it
+        if (response.data.role === 'admin') {
+          navigate('/admin'); // Redirect to admin page
+        } else if (response.data.role === 'customer') {
+          navigate('/'); // Redirect to home page for customers
+        } else {
+          setLoginStatus('Unknown role. Please contact support.');
+        }
       }
     } catch (error) {
       console.error('Error during login:', error);
@@ -95,6 +102,13 @@ const LoginPage = () => {
               Login
             </Button>
           </Form>
+
+          {/* Sign Up Link */}
+          <div className="mt-3">
+            <p>
+              Don't have an account? <Link to="/signup">Sign Up</Link>
+            </p>
+          </div>
         </Col>
       </Row>
     </Container>

@@ -5,7 +5,61 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-// Endpoint to register user
+router.get('/properties', (req, res) => {
+  // Code to return the list of properties
+  res.json([
+    { id: 1, name: 'Luxury Apartment', location: 'City Center', price: 1000 },
+    { id: 2, name: 'Family House', location: 'Suburb', price: 500 }
+  ]);
+});
+
+router.post('/properties', (req, res) => {
+  // Code to handle creating a new property
+  const newProperty = req.body;  // Assuming the property details come from the request body
+  res.status(201).json(newProperty);  // Respond with the created property
+});
+
+// ------------------------------------------Login--------------------------------------------------------------------
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body; // Assuming password is also sent in the request body
+
+  try {
+    // Check if the user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ msg: 'User does not exist' });
+    }
+
+    // Validate password using bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role, // Include the user's role in the token payload
+      },
+      
+    );
+
+    // Return the token and the user's role
+    return res.status(200).json({
+      token,
+      role: user.role, // Include role in the response
+    });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// -----------------------------------------------------Signup------------------------------------------------------------------
 router.post('/signup', async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -23,11 +77,10 @@ router.post('/signup', async (req, res) => {
         password,
         role,
       });
-    console.log(name, email, password, role);
 
     // Generate a JWT token
     const token = jwt.sign(
-      { role: user.role },
+      { role: newUser.role },
       'your_jwt_secret', // Replace with your own secret key
       { expiresIn: '1h' }
     );
@@ -37,9 +90,9 @@ router.post('/signup', async (req, res) => {
       message: 'User registered successfully',
       token,
       user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
       },
     });
   } catch (error) {

@@ -9,6 +9,7 @@ const app = express();
 // Middleware to parse JSON request body
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/user_registration', {

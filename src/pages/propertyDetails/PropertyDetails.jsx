@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import * as PANOLENS from 'panolens';
+import * as PANOLENS from 'panolens'; // Import Panolens.js
 
 import clubhouseImg from '../../assets/clubhouse.jpeg';
 import gardenImg from '../../assets/garden.jpg';
@@ -13,31 +13,48 @@ const PropertyDetails = () => {
   const { id } = useParams(); // Get the property ID from the URL
   const [property, setProperty] = useState(null); // Store fetched property data
   const panoramaRef = useRef(null); // Ref to the panorama container
+  const viewerRef = useRef(null); // To store the viewer instance
   const navigate = useNavigate(); // Hook to navigate
 
-  // Fetch property details from the API
+  // Simulating property data with vrImageUrl
   useEffect(() => {
-    axios
-      .get(`https://671be6102c842d92c381b05a.mockapi.io/api/properties/properties/${id}`)
-      .then((response) => {
-        setProperty(response.data);
-      })
-      .catch((error) => console.error('Error fetching property details:', error));
+    // Example property data with a static vrImageUrl for testing
+    const exampleProperty = {
+      id,
+      propertyName: 'Test Property',
+      propertyImage: 'https://via.placeholder.com/800x400.png?text=Property+Image',
+      price: 500000,
+      location: 'Test City',
+      availability: true,
+      vrImageUrl: 'https://static.inspirockcdn.com/panorama/panorama/360view.jpg', // 360-degree image URL
+    };
+
+    setProperty(exampleProperty);
   }, [id]);
 
   // Navigate to booking page
   const handleBooking = () => {
-    // Navigate to the booking page
-    navigate(`/booking/${id}`);
+    navigate(`/payment/${id}`);
   };
 
   // Initialize the panorama view when the component mounts
   useEffect(() => {
     if (property && property.vrImageUrl) {
       const panorama = new PANOLENS.ImagePanorama(property.vrImageUrl);
-      const viewer = new PANOLENS.Viewer({ container: panoramaRef.current });
-      viewer.add(panorama);
+
+      if (!viewerRef.current) {
+        viewerRef.current = new PANOLENS.Viewer({ container: panoramaRef.current });
+      }
+      viewerRef.current.add(panorama);
     }
+
+    // Cleanup function to remove panorama when component unmounts
+    return () => {
+      if (viewerRef.current) {
+        viewerRef.current.dispose(); // This will clear the viewer to avoid memory leaks
+        viewerRef.current = null;
+      }
+    };
   }, [property]);
 
   if (!property) {
@@ -95,21 +112,19 @@ const PropertyDetails = () => {
       </Row>
 
       {/* VR Mode - 360 Panorama View */}
-      {property.vrImageUrl && (
-        <Row className="mt-5">
-          <Col md={12}>
-            <h3>Explore in VR Mode</h3>
-            <div
-              ref={panoramaRef}
-              style={{
-                width: '100%',
-                height: '500px',
-                border: '1px solid #ddd',
-              }}
-            />
-          </Col>
-        </Row>
-      )}
+      <Row className="mt-5">
+        <Col md={12}>
+          <h3>Explore in VR Mode</h3>
+          <div
+            ref={panoramaRef}
+            style={{
+              width: '100%',
+              height: '500px',
+              border: '1px solid #ddd',
+            }}
+          />
+        </Col>
+      </Row>
     </Container>
   );
 };
